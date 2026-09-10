@@ -7,96 +7,31 @@ MASTER ENGINEERING JOURNAL, ERROR LOG & INTERVIEW GUIDE
 ----------------------------------------------------------------------
 - Business Requirement: A major online sports betting platform expanding into a 
   newly regulated market needed an enterprise-grade hybrid cloud architecture.
-- Architecture Challenge: 
-  * Private Infrastructure: Core transactional gaming engine and compliance databases 
-    hosted securely on private virtualization/storage layers.
-  * Public Cloud Tier: Frontend web streaming APIs and player analytical engines 
-    running on public cloud environments (AWS/Azure).
-  * Hybrid Challenge: Low-latency secure connectivity, automated Infrastructure as Code (IaC), 
-    disaster recovery backups, and robust perimeter firewall security.
-- Zero-Cost Open-Source Strategy: Replaced expensive proprietary components (VMware vSphere, 
-  Cisco ASAv, AWS paid services, Veeam) with powerful open-source equivalents (Docker, PostgreSQL, 
-  Python Boto3 simulation, Ansible, local backup scripts) to build a reproducible local lab.
+- Architecture Challenge: Bridging secure private databases with public cloud workloads 
+  with low latency, enterprise security, and automated IaC across all 4 project phases.
 
 
-2. OPEN-SOURCE TECHNOLOGY MAPPING
+2. ARCHITECTURE BREAKDOWN ACROSS 4 PHASES
 ----------------------------------------------------------------------
-* VMware vSphere / ESXi        --> Linux KVM / QEMU & Docker Containerization
-* vSAN / Nimble Storage        --> Local Docker Volumes & File-based Storage
-* VMware NSX-T Overlay         --> Docker Bridge/Overlay Networks & Open vSwitch
-* Cisco ASAv Firewall          --> Linux iptables / nftables & VyOS Routing
-* AWS / Azure Infrastructure   --> LocalStack & Python-based Cloud Simulation (Boto3)
-* Veeam Backup & Recovery      --> Automated Python/Tarball Encrypted Backup Vaults
-* Automation & IaC             --> Ansible & Python Core Automation Scripts
+- Phase 1: Private Infrastructure & Database Tier (Docker PostgreSQL & Ansible provisioning).
+- Phase 2: Secure Migration Ledger & Network Simulation (Python export scripts & VPC simulation).
+- Phase 3: Modular Terraform Public Cloud Landing Zone (AWS VPC modules & subnets).
+- Phase 4: Configuration Management & System Hardening (Ansible security & kernel optimization).
 
 
-3. ARCHITECTURE & COMPONENT BREAKDOWN
+3. COMPLETE ERROR LOG, MISTAKES & TROUBLESHOOTING GUIDE
 ----------------------------------------------------------------------
-A. Private Database Tier
-   - PostgreSQL running in a containerized Docker environment (`private-db`).
-   - Automated schema setup and table provisioning handled via Ansible playbooks (`ansible/setup_db.yml`).
-
-B. Secure Migration Ledger Fabric
-   - Python-based extraction script (`scripts/migrate_ledger.py`) pulling active player 
-   - balances and transaction logs from PostgreSQL into structured JSON payloads (`migration_payload.json`).
-
-C. Cloud Network & VPC Simulation
-   - Python-based infrastructure simulation (`scripts/cloud_fabric.py`) modeling 
-     cloud VPC topologies, public/private subnets, and routing rules without binary lock-in.
-
-D. Version Control & CI/CD Pipeline
-   - GitHub Actions workflow (`.github/workflows/ci.yml`) automating script validation on every push.
-   - Strict `.gitignore` configurations maintaining a lightweight repository footprint.
+- Error 1: GitHub File Size Limit Rejection (GH001) due to compiled Terraform `.terraform/` provider caches.
+  * Resolution: Added strict `.gitignore` rules, removed cached folders from index (`git rm -r --cached`), and pushed clean code.
+- Error 2: Standalone `docker-compose` binary not found on modern Ubuntu.
+  * Resolution: Switched command syntax to the native Docker plugin standard (`docker compose up -d`).
+- Error 3: Ansible local become timeout / interactive authentication prompts.
+  * Resolution: Configured a dedicated local inventory file (`ansible/hosts.ini`) with `ansible_connection=local`.
 
 
-4. COMPLETE ERROR LOG, MISTAKES & TROUBLESHOOTING GUIDE
+4. INTERVIEW PREPARATION TALKING POINTS
 ----------------------------------------------------------------------
-MISTAKE/ERROR 1: GitHub File Size Limit Rejection (GH001)
-- Symptom: Running `git push -u origin main` failed with:
-  `remote: error: File terraform/localstack/.terraform/providers/.../terraform-provider-aws_v5.100.0_x5 is 674.20 MB; this exceeds GitHub's file size limit of 100.00 MB`
-- Root Cause: Compiled Terraform AWS provider binaries and local provider provider caches were accidentally tracked by Git during initial setup.
-- Rectification / Action Plan:
-  1. Removed tracking for local cache folders: `git rm -r --cached terraform/localstack/.terraform`
-  2. Updated `.gitignore` to strictly exclude `.terraform/`, `*.tfstate`, and compiled binaries.
-  3. Amended the previous commit (`git commit --amend`) and force-pushed a clean, lightweight codebase (`git push origin main --force`).
-
-MISTAKE/ERROR 2: Standalone Docker Compose Binary Not Found
-- Symptom: Running `docker-compose up -d` returned `Command 'docker-compose' not found`.
-- Root Cause: Modern Ubuntu Linux distributions bundle Docker Compose as a native Docker CLI plugin rather than a legacy hyphenated binary (`docker-compose`).
-- Rectification / Action Plan:
-  - Switched command syntax to the modern standard: `docker compose up -d`.
-
-MISTAKE/ERROR 3: Working Tree Clutter from Runtime Artifacts
-- Symptom: Running `git status` showed untracked temporary JSON export payloads (`migration_payload.json`) and local state files (`terraform/terraform.tfstate`).
-- Root Cause: Runtime execution outputs were not initially blocked from git tracking.
-- Rectification / Action Plan:
-  - Added runtime artifacts and cache directories (`migration_payload.json`, `cloud_state/`, `*.tfstate`) to `.gitignore` to ensure a permanently clean working tree.
-
-
-5. CHRONOLOGICAL ACTION PLAN & EXECUTION WORKFLOW
-----------------------------------------------------------------------
-Phase 1: Environment Setup & Version Control Initialization
-  - Initialized repository and structured project folders (`ansible/`, `scripts/`, `.github/workflows/`).
-  - Configured robust `.gitignore` rules to prevent binary bloat.
-
-Phase 2: Private Database Provisioning
-  - Deployed PostgreSQL via Docker Compose.
-  - Executed Ansible playbook (`ansible/setup_db.yml`) to set up gaming platform schemas.
-
-Phase 3: Migration Fabric & Cloud Simulation
-  - Tested player record insertion and ran `scripts/migrate_ledger.py` to verify transaction exports.
-  - Executed python cloud simulation (`scripts/cloud_fabric.py`).
-
-Phase 4: CI/CD Pipeline & Documentation
-  - Added GitHub Actions CI workflow (`.github/workflows/ci.yml`).
-  - Created comprehensive README documentation and this master project journal.
-
-
-6. INTERVIEW PREPARATION TALKING POINTS
-----------------------------------------------------------------------
-- "How did you handle hybrid cloud networking without paid enterprise gear?"
-  * Answer: Simulated private virtualization and VPC routing using Linux namespaces, Docker networks, and Python automation scripts, bridging private databases to cloud simulation layers.
-- "How do you handle binary limitations in Git?"
-  * Answer: Enforced strict `.gitignore` rules to exclude large provider binaries and compiled caches, relying on lightweight IaC code and Ansible playbooks for reproducible environment provisioning.
-- "How do you validate code quality automatically?"
-  * Answer: Implemented a GitHub Actions CI pipeline that checks out code and runs python simulation tests on every push.
+- "How did you design a hybrid cloud network without paid enterprise gear?"
+  * Answer: Simulated private virtualization and routing using Docker networks, local PostgreSQL instances, and Python cloud simulation scripts.
+- "How do you manage Git hygiene with IaC tools?"
+  * Answer: Ensured strict `.gitignore` rules for provider caches and `.tfstate` files while keeping configuration code lightweight and reproducible.
