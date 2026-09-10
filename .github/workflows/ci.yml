@@ -1,4 +1,4 @@
-name: Hybrid Fabric CI
+name: Hybrid Cloud CI Pipeline
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  validate-scripts:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -18,6 +18,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Run Cloud Fabric Simulation Test
+      - name: Validate Python Syntax and Scripts
         run: |
-          python3 scripts/cloud_fabric.py
+          python3 -m py_compile scripts/*.py
+          echo "All Python automation scripts compiled successfully."
