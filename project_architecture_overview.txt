@@ -21,7 +21,7 @@ components to robust open-source equivalents.
 2. OPEN-SOURCE TECHNOLOGY MAPPING
 ---------------------------------
 * VMware vSphere / ESXi        --> Linux KVM / QEMU & Docker Containerization
-* vSAN / Nimble Storage        --> Local Docker Volumes & ZFS / File-based Storage
+* vSAN / Nimble Storage        --> Local Docker Volumes & File-based Storage
 * VMware NSX-T Overlay         --> Docker Bridge/Overlay Networks & Open vSwitch
 * Cisco ASAv Firewall          --> Linux iptables / nftables & VyOS Routing
 * AWS / Azure Infrastructure   --> LocalStack & Python-based Cloud Simulation (Boto3)
@@ -29,42 +29,34 @@ components to robust open-source equivalents.
 * Automation & IaC             --> Ansible & Python Core Automation Scripts
 
 
-3. ARCHITECTURE & COMPONENT BREAKDOWN
--------------------------------------
-A. Private Storage & Database Tier
-   - Containerized PostgreSQL instance (`private-db`) running locally via Docker Compose.
-   - Automated database schema setup and provisioning managed through Ansible playbooks 
-     (`ansible/setup_db.yml`), establishing player tables, wallets, and ledger constraints.
+3. ARCHITECTURE & COMPONENT BREAKDOWN (PHASES 1 - 4)
+-----------------------------------------------------
+A. Phase 1 & 2: Private Database & Migration Fabric
+   - PostgreSQL running in a containerized Docker environment (`private-db`).
+   - Automated schema setup via Ansible (`ansible/setup_db.yml`).
+   - Python migration extraction script (`scripts/migrate_ledger.py`) generating `migration_payload.json`.
+   - Python cloud network topology simulation (`scripts/cloud_fabric.py`).
 
-B. Secure Migration Ledger Fabric
-   - Python-based migration automation (`scripts/migrate_ledger.py`) that extracts 
-     active player balances and transactional records from the private database, 
-     serializing them into structured JSON payloads (`migration_payload.json`) for 
-     secure multi-region synchronization.
+B. Phase 3: Modular Terraform Landing Zone
+   - AWS VPC, public subnets, and private analytical subnets defined under `terraform/`.
 
-C. Cloud Network & VPC Simulation
-   - Python-based infrastructure simulation (`scripts/cloud_fabric.py`) modeling 
-     cloud VPC topologies, public/private subnets, and hybrid routing tables 
-     without relying on unstable Terraform provider binary plugins.
-
-D. Continuous Integration & Version Control
-   - Automated GitHub Actions workflow (`.github/workflows/ci.yml`) validating 
-     script execution and infrastructure integrity checks on every push.
-   - Strict `.gitignore` configurations preventing large binary artifacts (such as 
-     Terraform provider caches) from bloating the Git repository.
+C. Phase 4: Server Hardening & Configuration Management
+   - Automated Ansible playbook (`ansible/configure_servers.yml`) handling package installation, 
+     UFW firewall enforcement, service user creation, and Linux kernel performance tuning.
 
 
 4. QUICK START & DEPLOYMENT GUIDE
 ---------------------------------
 Step 1: Deploy Database & Run Ansible Schema
    docker compose up -d
-   ansible-playbook ansible/setup_db.yml
+   ansible-playbook -i ansible/hosts.ini ansible/setup_db.yml
 
-Step 2: Run Cloud Network Simulation
+Step 2: Run Cloud Simulation & Migration Export
    python3 scripts/cloud_fabric.py
-
-Step 3: Execute Secure Data Migration Export
    python3 scripts/migrate_ledger.py
+
+Step 3: Execute Server Hardening Playbook
+   ansible-playbook -i ansible/hosts.ini ansible/configure_servers.yml
 
 
 5. CONCLUSION
