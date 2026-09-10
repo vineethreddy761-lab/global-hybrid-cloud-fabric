@@ -1,0 +1,74 @@
+GLOBAL HYBRID CLOUD NETWORK & SECURE MIGRATION FABRIC
+=====================================================
+
+1. EXECUTIVE SUMMARY & BUSINESS SCENARIO
+----------------------------------------
+A major online sports betting platform expansion into a newly regulated market 
+demands an enterprise-grade hybrid cloud architecture:
+- Private Infrastructure: Core transactional gaming engine and compliance databases 
+  residing on secure private virtualization and storage (simulated via open-source tools).
+- Public Cloud Tier: Frontend web streaming APIs and player analytical engines 
+  running on public cloud environments (AWS/Azure).
+- Hybrid Challenge: Low-latency, secure connectivity bridging private workloads 
+  to public cloud VPCs, automated end-to-end with Infrastructure as Code (IaC), 
+  monitored via disaster recovery backups, and secured behind robust network firewalls.
+
+To execute this architecture entirely with free, open-source tools and ensure 
+seamless version control without binary bloat, we mapped enterprise proprietary 
+components to robust open-source equivalents.
+
+
+2. OPEN-SOURCE TECHNOLOGY MAPPING
+---------------------------------
+* VMware vSphere / ESXi        --> Linux KVM / QEMU & Docker Containerization
+* vSAN / Nimble Storage        --> Local Docker Volumes & ZFS / File-based Storage
+* VMware NSX-T Overlay         --> Docker Bridge/Overlay Networks & Open vSwitch
+* Cisco ASAv Firewall          --> Linux iptables / nftables & VyOS Routing
+* AWS / Azure Infrastructure   --> LocalStack & Python-based Cloud Simulation (Boto3)
+* Veeam Backup & Recovery      --> Automated Python/Tarball Encrypted Backup Vaults
+* Automation & IaC             --> Ansible & Python Core Automation Scripts
+
+
+3. ARCHITECTURE & COMPONENT BREAKDOWN
+-------------------------------------
+A. Private Storage & Database Tier
+   - Containerized PostgreSQL instance (`private-db`) running locally via Docker Compose.
+   - Automated database schema setup and provisioning managed through Ansible playbooks 
+     (`ansible/setup_db.yml`), establishing player tables, wallets, and ledger constraints.
+
+B. Secure Migration Ledger Fabric
+   - Python-based migration automation (`scripts/migrate_ledger.py`) that extracts 
+     active player balances and transactional records from the private database, 
+     serializing them into structured JSON payloads (`migration_payload.json`) for 
+     secure multi-region synchronization.
+
+C. Cloud Network & VPC Simulation
+   - Python-based infrastructure simulation (`scripts/cloud_fabric.py`) modeling 
+     cloud VPC topologies, public/private subnets, and hybrid routing tables 
+     without relying on unstable Terraform provider binary plugins.
+
+D. Continuous Integration & Version Control
+   - Automated GitHub Actions workflow (`.github/workflows/ci.yml`) validating 
+     script execution and infrastructure integrity checks on every push.
+   - Strict `.gitignore` configurations preventing large binary artifacts (such as 
+     Terraform provider caches) from bloating the Git repository.
+
+
+4. QUICK START & DEPLOYMENT GUIDE
+---------------------------------
+Step 1: Deploy Database & Run Ansible Schema
+   docker compose up -d
+   ansible-playbook ansible/setup_db.yml
+
+Step 2: Run Cloud Network Simulation
+   python3 scripts/cloud_fabric.py
+
+Step 3: Execute Secure Data Migration Export
+   python3 scripts/migrate_ledger.py
+
+
+5. CONCLUSION
+-------------
+The Global Hybrid Cloud Network & Secure Migration Fabric successfully bridges 
+secure private storage with public cloud scalability using 100% open-source 
+automation, robust version control, and clean CI/CD validation.
