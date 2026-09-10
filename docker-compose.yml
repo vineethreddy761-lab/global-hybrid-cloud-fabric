@@ -1,0 +1,11 @@
+services:
+  private_db:
+    image: postgres:15-alpine
+    container_name: private-db
+    environment:
+      POSTGRES_DB: betting_engine
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: securepassword
+    ports:
+      - "5432:5432"
+    restart: always

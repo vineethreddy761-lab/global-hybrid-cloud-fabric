@@ -1,0 +1,28 @@
+---
+- name: Configure Private Database Schema
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create betting platform database schema
+      community.postgresql.postgresql_db:
+        name: betting_engine
+        login_host: "127.0.0.1"
+        login_port: 5432
+        login_user: "admin"
+        login_password: "securepassword"
+        state: present
+
+    - name: Create users table in private database
+      community.postgresql.postgresql_table:
+        db: betting_engine
+        login_host: "127.0.0.1"
+        login_port: 5432
+        login_user: "admin"
+        login_password: "securepassword"
+        name: players
+        state: present
+        columns:
+          - id SERIAL PRIMARY KEY
+          - username VARCHAR(50) UNIQUE NOT NULL
+          - wallet_balance NUMERIC(10, 2) DEFAULT 0.00
+          - created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

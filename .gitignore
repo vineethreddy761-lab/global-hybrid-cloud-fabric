@@ -1,0 +1,4 @@
+terraform/**/.terraform/
+terraform/**/localstack/.terraform/
+cloud_state/
+migration_payload.json
