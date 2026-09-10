@@ -46,14 +46,4 @@ ansible-playbook -i ansible/hosts.ini ansible/configure_servers.yml
 
 * **Architecture Overview:** See `project_architecture_overview.txt`
 * **Master Engineering Journal & Interview Guide:** See `complete_project_master_journal.txt`
-EOF
 
-```
-
-Then commit and push your cleanly formatted changes:
-```bash
-git add README.md
-git commit -m "docs: add proper markdown code block syntax for all README steps"
-git push origin main
-
-```
